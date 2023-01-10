@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SimpleHRM.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleHRM.DataAccess
+namespace SimpleHRM.DataAccess.Data
 {
     public class ApplicationDbContext : DbContext
     {
@@ -13,5 +14,6 @@ namespace SimpleHRM.DataAccess
         {
 
         }
+        public DbSet<Employee> Employees { get; set; }
     }
 }
