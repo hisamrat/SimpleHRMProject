@@ -47,7 +47,7 @@ namespace SimpleHRM.DataAccess.Repositories
 
         public async Task<ICollection<Employee>> GetEmployees()
         {
-            return  _dbContext.Employees.AsNoTracking().OrderBy(p => p.FirstName).ToList();
+            return  _dbContext.Employees.AsNoTracking().OrderBy(p => p.Id).ToList();
         }
 
         public async Task<bool> Save()

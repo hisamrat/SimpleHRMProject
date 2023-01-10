@@ -17,13 +17,12 @@ namespace SimpleHRM.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeesController(ApplicationDbContext context,IMapper mapper, IEmployeeRepository employeeRepository)
+        public EmployeesController(IMapper mapper, IEmployeeRepository employeeRepository)
         {
-            _context = context;
             _mapper = mapper;
             _employeeRepository = employeeRepository;
         }
@@ -88,7 +87,7 @@ namespace SimpleHRM.Controllers
 
                 if (!await _employeeRepository.UpdateEmployee(empobj))
                 {
-                    ModelState.AddModelError("", $"sometion went wrong update record{empobj.FirstName}");
+                   
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
                 return NoContent();
@@ -118,7 +117,7 @@ namespace SimpleHRM.Controllers
                
                 if (!await _employeeRepository.CreateEmployee(employee))
                 {
-                    ModelState.AddModelError("", $"sometion went wrong saving record{employeeCreateDto.FirstName}");
+                  
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
                 return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
@@ -143,15 +142,16 @@ namespace SimpleHRM.Controllers
             {
                 if (!_employeeRepository.EmployeeExists(id))
                 {
+       
                     return NotFound();
                 }
 
-                var empobj = _employeeRepository.GetEmployee(id);
+                var empobj = await _employeeRepository.GetEmployee(id);
 
-                if (!await _employeeRepository.DeleteEmployee(await empobj))
+                if (!await _employeeRepository.DeleteEmployee(empobj))
                 {
-
-                    return StatusCode(500, ModelState);
+                   
+                    return StatusCode(StatusCodes.Status500InternalServerError);
                 }
                 return NoContent();
 
