@@ -1,4 +1,5 @@
-﻿using SimpleHRM.DataAccess.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SimpleHRM.DataAccess.Data;
 using SimpleHRM.DataAccess.Repositories.IRepositories;
 using SimpleHRM.Models;
 using System;
@@ -17,15 +18,16 @@ namespace SimpleHRM.DataAccess.Repositories
         {
             _dbContext = dbContext;
         }
-        public bool CreateEmployee(Employee employee)
+        public async Task<bool> CreateEmployee(Employee employee)
         {
-            _dbContext.Employees.Add(employee);
-            return Save();
+          await  _dbContext.Employees.AddAsync(employee);
+            return await Save();
         }
 
-        public bool DeleteEmployee(Employee employee)
+        public async Task<bool> DeleteEmployee(Employee employee)
         {
-            throw new NotImplementedException();
+             _dbContext.Employees.Remove(employee);
+            return await Save();
         }
 
         public bool EmployeeExists(string name)
@@ -35,27 +37,28 @@ namespace SimpleHRM.DataAccess.Repositories
 
         public bool EmployeeExists(int id)
         {
-            throw new NotImplementedException();
+            return _dbContext.Employees.Any(a => a.Id == id);
         }
 
-        public Employee GetEmployee(int employeeId)
+        public async Task<Employee>  GetEmployee(int employeeId)
         {
-            throw new NotImplementedException();
+          return  await _dbContext.Employees.FindAsync(employeeId);
         }
 
-        public ICollection<Employee> GetEmployees()
+        public async Task<ICollection<Employee>> GetEmployees()
         {
-            throw new NotImplementedException();
+            return  _dbContext.Employees.AsNoTracking().OrderBy(p => p.FirstName).ToList();
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            return _dbContext.SaveChanges() >= 0 ? true : false;
+            return await _dbContext.SaveChangesAsync() >= 0 ? true : false;
         }
 
-        public bool UpdateEmployee(Employee employee)
+        public async Task<bool> UpdateEmployee(Employee employee)
         {
-            throw new NotImplementedException();
+             _dbContext.Employees.Update(employee);
+            return await Save();
         }
     }
 }

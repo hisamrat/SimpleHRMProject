@@ -28,64 +28,85 @@ namespace SimpleHRM.Controllers
             _employeeRepository = employeeRepository;
         }
 
-        // GET: api/Employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EmployeeDto>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetEmployees()
         {
-            return await _context.Employees.ToListAsync();
-        }
-
-        // GET: api/Employees/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
-        {
-            var employee = await _context.Employees.FindAsync(id);
-
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            return employee;
-        }
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, Employee employee)
-        {
-            if (id != employee.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(employee).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var objlist =await _employeeRepository.GetEmployees();
+                var empmodel = _mapper.Map<List<EmployeeDto>>(objlist);
+                return Ok(empmodel);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!EmployeeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                return BadRequest(ex.Message);
+            }
+           
         }
 
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
+        {
+            try
+            {
+                var obj = await _employeeRepository.GetEmployee(id);
+               
+
+                if (obj == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound);
+                }
+                var employee = _mapper.Map<EmployeeDto>(obj);
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateEmployee( [FromQuery] EmployeeDto employeeDto)
+        {
+            try
+            {
+                if (employeeDto == null)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var empobj = _mapper.Map<Employee>(employeeDto);
+
+                if (!await _employeeRepository.UpdateEmployee(empobj))
+                {
+                    ModelState.AddModelError("", $"sometion went wrong update record{empobj.FirstName}");
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Employee))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Employee>>   CreateEmployee([FromQuery] EmployeeCreateDto employeeCreateDto)
+        public async Task<IActionResult> CreateEmployee([FromQuery] EmployeeCreateDto employeeCreateDto)
         {
             try
             {
@@ -95,7 +116,7 @@ namespace SimpleHRM.Controllers
                 }
                 var employee = _mapper.Map<Employee>(employeeCreateDto);
                
-                if (!_employeeRepository.CreateEmployee(employee))
+                if (!await _employeeRepository.CreateEmployee(employee))
                 {
                     ModelState.AddModelError("", $"sometion went wrong saving record{employeeCreateDto.FirstName}");
                     return StatusCode(StatusCodes.Status500InternalServerError);
@@ -103,33 +124,44 @@ namespace SimpleHRM.Controllers
                 return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                return BadRequest(ex.Message);
             }
-           
+
         }
 
-        // DELETE: api/Employees/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
+            try
             {
-                return NotFound();
+                if (!_employeeRepository.EmployeeExists(id))
+                {
+                    return NotFound();
+                }
+
+                var empobj = _employeeRepository.GetEmployee(id);
+
+                if (!await _employeeRepository.DeleteEmployee(await empobj))
+                {
+
+                    return StatusCode(500, ModelState);
+                }
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
             }
 
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool EmployeeExists(int id)
-        {
-            return _context.Employees.Any(e => e.Id == id);
-        }
+        }      
     }
 }

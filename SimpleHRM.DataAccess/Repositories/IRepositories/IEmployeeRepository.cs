@@ -9,13 +9,14 @@ namespace SimpleHRM.DataAccess.Repositories.IRepositories
 {
     public interface IEmployeeRepository
     {
-        ICollection<Employee> GetEmployees();
-        Employee GetEmployee(int employeeId);
+        Task<ICollection<Employee>> GetEmployees();
+        Task<Employee> GetEmployee(int employeeId);
         bool EmployeeExists(string name);
         bool EmployeeExists(int id);
-        bool CreateEmployee(Employee employee);
-        bool UpdateEmployee(Employee employee);
-        bool DeleteEmployee(Employee employee);
-        bool Save();
+
+        Task<bool> CreateEmployee(Employee employee);
+        Task<bool> UpdateEmployee(Employee employee);
+        Task<bool> DeleteEmployee(Employee employee);
+        Task<bool> Save();
     }
 }
