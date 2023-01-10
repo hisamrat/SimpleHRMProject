@@ -15,5 +15,6 @@ namespace SimpleHRM.DataAccess.Data
 
         }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<EmployeesLeave> EmployeesLeaves { get; set; }
     }
 }

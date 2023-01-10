@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SimpleHRM.Models;
+using SimpleHRM.Models.Dto;
 using SimpleHRM.Models.DTO;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace SimpleHRM.Utility
         {
             CreateMap<Employee, EmployeeDto>().ReverseMap();
             CreateMap<Employee, EmployeeCreateDto>().ReverseMap();
+            CreateMap<EmployeesLeave, EmployeesLeaveDto>().ReverseMap();
+            CreateMap<EmployeesLeave, EmployeesLeaveCreateDto>().ReverseMap();
         }
     }
 }
