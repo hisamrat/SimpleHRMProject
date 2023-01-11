@@ -18,6 +18,7 @@ namespace SimpleHRM.Utility
             CreateMap<Employee, EmployeeCreateDto>().ReverseMap();
             CreateMap<EmployeesLeave, EmployeesLeaveDto>().ReverseMap();
             CreateMap<EmployeesLeave, EmployeesLeaveCreateDto>().ReverseMap();
+            CreateMap<EmployeesLeave, EmployeesLeaveUpdateDto>().ReverseMap();
         }
     }
 }
