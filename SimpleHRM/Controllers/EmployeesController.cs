@@ -10,6 +10,7 @@ using SimpleHRM.DataAccess.Data;
 using SimpleHRM.DataAccess.Repositories.IRepositories;
 using SimpleHRM.Models;
 using SimpleHRM.Models.DTO;
+using SimpleHRM.Utility;
 
 namespace SimpleHRM.Controllers
 {
@@ -17,14 +18,38 @@ namespace SimpleHRM.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-
+        private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeesController(IMapper mapper, IEmployeeRepository employeeRepository)
+        public EmployeesController(ApplicationDbContext dbContext,IMapper mapper, IEmployeeRepository employeeRepository)
         {
+            _dbContext = dbContext;
             _mapper = mapper;
             _employeeRepository = employeeRepository;
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> SearchEmployee(string value, [FromQuery] PaginationDto paginationDto)
+        {
+            try
+            {
+                var queryable = _dbContext.Employees.AsQueryable();
+                if (!string.IsNullOrEmpty(value))
+                {
+                    queryable = queryable.Where(a => a.FirstName.StartsWith(value));
+                }
+                await HttpContext.InsertPaginationParametersInResponse(queryable, paginationDto.RecordsPerPage);
+                var objlist = queryable.Paginate(paginationDto).AsNoTracking().ToList();            
+                var empmodel = _mapper.Map<List<EmployeeDto>>(objlist);
+                return Ok(empmodel);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpGet]
@@ -112,7 +137,8 @@ namespace SimpleHRM.Controllers
                   
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
-                return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
+                var emp = _mapper.Map<EmployeeDto>(employee);
+                return CreatedAtAction("GetEmployee", new { id = employee.Id }, emp);
 
             }
             catch (Exception ex)

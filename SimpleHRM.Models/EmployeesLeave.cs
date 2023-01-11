@@ -10,11 +10,11 @@ namespace SimpleHRM.Models
 {
    public class EmployeesLeave
     {
-        [Key]
         public int Id { get; set; }
-       
+
         [Required]
         public int EmployeeId { get; set; }
+
         [ForeignKey("EmployeeId")]
         public Employee Employee { get; set; }
         [Required]

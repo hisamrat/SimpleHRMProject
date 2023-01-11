@@ -89,7 +89,8 @@ namespace SimpleHRM.Controllers
 
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
-                return CreatedAtAction("GetLeave", new { leaveId = employeeleave.Id }, employeeleave);
+                var leave = _mapper.Map<EmployeesLeaveDto>(employeeleave);
+                return CreatedAtAction("GetLeave", new { leaveId = employeeleave.Id }, leave);
 
             }
             catch (Exception ex)

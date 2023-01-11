@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using SimpleHRM.DataAccess.Data;
 using SimpleHRM.DataAccess.Repositories.IRepositories;
 using SimpleHRM.Models;
+using SimpleHRM.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +32,6 @@ namespace SimpleHRM.DataAccess.Repositories
             return await Save();
         }
 
-        public bool EmployeeExists(string name)
-        {
-            throw new NotImplementedException();
-        }
 
         public bool EmployeeExists(int id)
         {
@@ -54,6 +52,8 @@ namespace SimpleHRM.DataAccess.Repositories
         {
             return await _dbContext.SaveChangesAsync() >= 0 ? true : false;
         }
+
+       
 
         public async Task<bool> UpdateEmployee(Employee employee)
         {
