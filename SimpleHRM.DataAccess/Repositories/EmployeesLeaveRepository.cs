@@ -40,7 +40,7 @@ namespace SimpleHRM.DataAccess.Repositories
         }
         public async Task<EmployeesLeave> GetLeave(int leaveid)
         {
-            return await _dbContext.EmployeesLeaves.Include(c => c.Employee).FirstOrDefaultAsync(c=>c.Id== leaveid);
+            return await _dbContext.EmployeesLeaves.AsNoTracking().Include(c => c.Employee).FirstOrDefaultAsync(c=>c.Id== leaveid);
         }
 
         public async Task<ICollection<EmployeesLeave>> GetLeaves()

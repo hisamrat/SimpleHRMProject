@@ -29,18 +29,27 @@ namespace SimpleHRM.Controllers
             _employeeRepository = employeeRepository;
         }
 
+        /// <summary>
+        /// Search employee information here
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="paginationDto"></param>
+        /// <returns></returns>
+
         [HttpGet("[action]")]
-        public async Task<IActionResult> SearchEmployee(string value, [FromQuery] PaginationDto paginationDto)
+        public async Task<IActionResult> SearchEmployee(string Searchvalue, [FromQuery] PaginationDto paginationDto)
         {
             try
-            {
+            {              
+                DateTime chaeckdate;
+                var check = DateTime.TryParse(Searchvalue, out chaeckdate);            
                 var queryable = _dbContext.Employees.AsQueryable();
-                if (!string.IsNullOrEmpty(value))
-                {
-                    queryable = queryable.Where(a => a.FirstName.StartsWith(value));
+                if (!string.IsNullOrEmpty(Searchvalue))
+                {                 
+                    queryable = queryable.Where(a =>  a.Id.ToString()==Searchvalue.Trim() || a.JoiningDate.Date == (check == true ? Convert.ToDateTime(Searchvalue).Date : null) || a.DateOfBirth.Date ==  (check==true?Convert.ToDateTime(Searchvalue).Date:null) || a.FirstName.Trim().StartsWith(Searchvalue.Trim()) || a.MiddleName.Trim().StartsWith(Searchvalue.Trim()) || a.LastName.Trim().StartsWith(Searchvalue.Trim()) || a.Designation.Trim().StartsWith(Searchvalue.Trim()) || a.Department.Trim().StartsWith(Searchvalue.Trim()));
                 }
                 await HttpContext.InsertPaginationParametersInResponse(queryable, paginationDto.RecordsPerPage);
-                var objlist = queryable.Paginate(paginationDto).AsNoTracking().ToList();            
+                var objlist = queryable.Paginate(paginationDto).AsNoTracking().OrderBy(p => p.Id).ToList();            
                 var empmodel = _mapper.Map<List<EmployeeDto>>(objlist);
                 return Ok(empmodel);
             }
@@ -51,7 +60,10 @@ namespace SimpleHRM.Controllers
             }
 
         }
-
+        /// <summary>
+        /// Get a list of employee information
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetEmployees()
         {
@@ -69,9 +81,13 @@ namespace SimpleHRM.Controllers
            
         }
 
+        /// <summary>
+        /// Get individual employee information with id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
 
         [HttpGet("{id}")]
-
         public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
         {
             try
@@ -93,7 +109,11 @@ namespace SimpleHRM.Controllers
             }
 
         }
-
+        /// <summary>
+        /// Update individual employee information
+        /// </summary>
+        /// <param name="employeeDto"></param>
+        /// <returns></returns>
         [HttpPut]
         public async Task<IActionResult> UpdateEmployee( [FromQuery] EmployeeDto employeeDto)
         {
@@ -120,6 +140,11 @@ namespace SimpleHRM.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        /// <summary>
+        /// Create individual employee information
+        /// </summary>
+        /// <param name="employeeCreateDto"></param>
+        /// <returns></returns>
 
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromQuery] EmployeeCreateDto employeeCreateDto)
@@ -149,6 +174,11 @@ namespace SimpleHRM.Controllers
 
         }
 
+        /// <summary>
+        /// Delete individual employee information with id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {

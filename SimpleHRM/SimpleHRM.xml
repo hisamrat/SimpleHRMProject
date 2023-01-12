@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SimpleHRM</name>
+    </assembly>
+    <members>
+        <member name="M:SimpleHRM.Controllers.EmployeesController.SearchEmployee(System.String,SimpleHRM.Models.DTO.PaginationDto)">
+            <summary>
+            Search employee information here
+            </summary>
+            <param name="value"></param>
+            <param name="paginationDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.EmployeesController.GetEmployees">
+            <summary>
+            Get a list of employee information
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.EmployeesController.GetEmployee(System.Int32)">
+            <summary>
+            Get individual employee information with id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.EmployeesController.UpdateEmployee(SimpleHRM.Models.DTO.EmployeeDto)">
+            <summary>
+            Update individual employee information
+            </summary>
+            <param name="employeeDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.EmployeesController.CreateEmployee(SimpleHRM.Models.DTO.EmployeeCreateDto)">
+            <summary>
+            Create individual employee information
+            </summary>
+            <param name="employeeCreateDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.EmployeesController.DeleteEmployee(System.Int32)">
+            <summary>
+            Delete individual employee information with id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.ManageLeaveController.GetLeaves">
+            <summary>
+            Get a list of employees leave information
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.ManageLeaveController.GetLeave(System.Int32)">
+            <summary>
+            Get individual employee leave information with id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.ManageLeaveController.CreateLeave(SimpleHRM.Models.Dto.EmployeesLeaveCreateDto)">
+            <summary>
+            Create individual employee leave request
+            </summary>
+            <param name="employeesLeaveCreateDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.ManageLeaveController.UpdateLeave(SimpleHRM.Models.Dto.EmployeesLeaveUpdateDto)">
+            <summary>
+            Update individual employee leave request
+            </summary>
+            <param name="employeesLeaveUpdate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SimpleHRM.Controllers.ManageLeaveController.DeleteLeave(System.Int32)">
+            <summary>
+            Delete individual employee leave request with id
+            </summary>
+            <param name="leaveId"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

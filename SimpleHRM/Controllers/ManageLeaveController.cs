@@ -27,6 +27,10 @@ namespace SimpleHRM.Controllers
             _dbContext = dbContext;
             _employeesLeave = employeesLeave;
         }
+        /// <summary>
+        /// Get a list of employees leave information
+        /// </summary>
+        /// <returns></returns>
 
         [HttpGet]
         public async Task<IActionResult> GetLeaves()
@@ -44,7 +48,11 @@ namespace SimpleHRM.Controllers
             }
 
         }
-
+        /// <summary>
+        /// Get individual employee leave information with id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{leaveId:int}")]
         public async Task<ActionResult<EmployeesLeaveDto>> GetLeave(int leaveId)
         {
@@ -67,7 +75,11 @@ namespace SimpleHRM.Controllers
             }
 
         }
-
+        /// <summary>
+        /// Create individual employee leave request
+        /// </summary>
+        /// <param name="employeesLeaveCreateDto"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> CreateLeave([FromQuery] EmployeesLeaveCreateDto employeesLeaveCreateDto)
         {
@@ -100,6 +112,11 @@ namespace SimpleHRM.Controllers
             }
 
         }
+        /// <summary>
+        /// Update individual employee leave request
+        /// </summary>
+        /// <param name="employeesLeaveUpdate"></param>
+        /// <returns></returns>
         [HttpPut]
         public async Task<IActionResult> UpdateLeave([FromQuery] EmployeesLeaveUpdateDto employeesLeaveUpdate)
         {
@@ -126,6 +143,11 @@ namespace SimpleHRM.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        /// <summary>
+        /// Delete individual employee leave request with id
+        /// </summary>
+        /// <param name="leaveId"></param>
+        /// <returns></returns>
         [HttpDelete("{leaveId:int}")]
         public async Task<IActionResult> DeleteLeave(int leaveId)
         {
