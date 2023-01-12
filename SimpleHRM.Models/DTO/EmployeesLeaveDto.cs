@@ -11,7 +11,6 @@ namespace SimpleHRM.Models.Dto
 {
    public class EmployeesLeaveDto
     {
-        [Required]
         public int Id { get; set; }
        
         [Required]

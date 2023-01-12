@@ -14,10 +14,13 @@ namespace SimpleHRM.Models.DTO
         public string MiddleName { get; set; }
         [Required]
         public string LastName { get; set; }
+        [Required]
         public DateTime DateOfBirth { get; set; }
         [Required]
         public DateTime JoiningDate { get; set; }
+        [Required]
         public string Designation { get; set; }
+        [Required]
         public string Department { get; set; }
     }
 }

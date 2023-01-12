@@ -10,6 +10,7 @@ namespace SimpleHRM.Models
 {
    public class EmployeesLeave
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]

@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SimpleHRM.DataAccess.Data;
 using SimpleHRM.DataAccess.Repositories.IRepositories;
 using SimpleHRM.Models;
 using SimpleHRM.Models.Dto;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleHRM.Controllers
@@ -18,13 +16,11 @@ namespace SimpleHRM.Controllers
     public class ManageLeaveController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ApplicationDbContext _dbContext;
         private readonly IEmployeesLeaveRepository _employeesLeave;
 
-        public ManageLeaveController(IMapper mapper, ApplicationDbContext dbContext, IEmployeesLeaveRepository employeesLeave)
+        public ManageLeaveController(IMapper mapper, IEmployeesLeaveRepository employeesLeave)
         {
            _mapper = mapper;
-            _dbContext = dbContext;
             _employeesLeave = employeesLeave;
         }
         /// <summary>
@@ -49,16 +45,16 @@ namespace SimpleHRM.Controllers
 
         }
         /// <summary>
-        /// Get individual employee leave information with id
+        /// Get individual employee leave information with leaveId
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{leaveId:int}")]
-        public async Task<ActionResult<EmployeesLeaveDto>> GetLeave(int leaveId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<EmployeesLeaveDto>> GetLeave(int id)
         {
             try
             {
-                var obj = await _employeesLeave.GetLeave(leaveId);
+                var obj = await _employeesLeave.GetLeave(id);
 
 
                 if (obj == null)
@@ -102,7 +98,7 @@ namespace SimpleHRM.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
                 var leave = _mapper.Map<EmployeesLeaveDto>(employeeleave);
-                return CreatedAtAction("GetLeave", new { leaveId = employeeleave.Id }, leave);
+                return CreatedAtAction("GetLeave", new { id = employeeleave.Id }, leave);
 
             }
             catch (Exception ex)
@@ -144,22 +140,22 @@ namespace SimpleHRM.Controllers
             }
         }
         /// <summary>
-        /// Delete individual employee leave request with id
+        /// Delete individual employee leave request with leaveId
         /// </summary>
-        /// <param name="leaveId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{leaveId:int}")]
-        public async Task<IActionResult> DeleteLeave(int leaveId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteLeave(int id)
         {
             try
             {
-                if (!_employeesLeave.LeaveExists(leaveId))
+                if (!_employeesLeave.LeaveExists(id))
                 {
 
                     return NotFound();
                 }
 
-                var empleaveobj = await _employeesLeave.GetLeave(leaveId);
+                var empleaveobj = await _employeesLeave.GetLeave(id);
 
                 if (!await _employeesLeave.DeleteEmployeeLeave(empleaveobj))
                 {

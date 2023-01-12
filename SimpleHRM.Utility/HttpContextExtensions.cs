@@ -9,7 +9,7 @@ namespace SimpleHRM.Utility
 {
     public static class HttpContextExtensions
     {
-        public async static Task InsertPaginationParametersInResponse<T>(this HttpContext httpContext,
+        public static Task InsertPaginationParametersInResponse<T>(this HttpContext httpContext,
             IQueryable<T> queryable,
             int recordsPerPage)
         {
@@ -17,7 +17,7 @@ namespace SimpleHRM.Utility
             double count = queryable.Count();
             double totalAmountPages = Math.Ceiling(count / recordsPerPage);
             httpContext.Response.Headers.Add("totalAmountPages", totalAmountPages.ToString());
-
+            return Task.CompletedTask;
         }
     }
 }

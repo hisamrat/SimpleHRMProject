@@ -38,6 +38,7 @@ namespace SimpleHRM
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IEmployeesLeaveRepository, EmployeesLeaveRepository>();
             services.AddAutoMapper(typeof(Mapping));
+            services.AddMemoryCache();
             services.AddHttpContextAccessor();
             services.AddControllers();
             services.AddSwaggerGen(c =>
