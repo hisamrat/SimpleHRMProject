@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using SimpleHRM.DataAccess.Data;
 using SimpleHRM.DataAccess.Repositories.IRepositories;
 using SimpleHRM.Models;
@@ -15,12 +16,14 @@ namespace SimpleHRM.Controllers
     [ApiController]
     public class ManageLeaveController : ControllerBase
     {
+        private const string LeaveListCacheKey = "leaveList";
         private readonly IMapper _mapper;
         private readonly IEmployeesLeaveRepository _employeesLeave;
-
-        public ManageLeaveController(IMapper mapper, IEmployeesLeaveRepository employeesLeave)
+        private IMemoryCache _cache;
+        public ManageLeaveController(IMemoryCache cache, IMapper mapper, IEmployeesLeaveRepository employeesLeave)
         {
-           _mapper = mapper;
+            _cache = cache;
+            _mapper = mapper;
             _employeesLeave = employeesLeave;
         }
         /// <summary>
@@ -33,9 +36,20 @@ namespace SimpleHRM.Controllers
         {
             try
             {
-                var objlist = await _employeesLeave.GetLeaves();
-                var empleave = _mapper.Map<List<EmployeesLeaveDto>>(objlist);
-                return Ok(empleave);
+                if (!_cache.TryGetValue(LeaveListCacheKey, out List<EmployeesLeaveDto> leaveList))
+                {
+                    var objlist = await _employeesLeave.GetLeaves();
+                    leaveList = _mapper.Map<List<EmployeesLeaveDto>>(objlist);
+                    var cacheExpiryOptions = new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpiration = DateTime.Now.AddMinutes(5),
+                        Priority = CacheItemPriority.High,
+                        SlidingExpiration = TimeSpan.FromMinutes(2),
+                       
+                    };
+                    _cache.Set(LeaveListCacheKey, leaveList, cacheExpiryOptions);
+                }
+                return Ok(leaveList);
             }
             catch (Exception ex)
             {
@@ -98,6 +112,7 @@ namespace SimpleHRM.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
                 var leave = _mapper.Map<EmployeesLeaveDto>(employeeleave);
+                _cache.Remove(LeaveListCacheKey);
                 return CreatedAtAction("GetLeave", new { id = employeeleave.Id }, leave);
 
             }
@@ -130,6 +145,7 @@ namespace SimpleHRM.Controllers
 
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
+                _cache.Remove(LeaveListCacheKey);
                 return NoContent();
 
             }
@@ -162,6 +178,7 @@ namespace SimpleHRM.Controllers
 
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
+                _cache.Remove(LeaveListCacheKey);
                 return NoContent();
 
             }

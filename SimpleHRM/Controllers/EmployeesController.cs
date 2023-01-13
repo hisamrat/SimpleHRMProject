@@ -21,7 +21,6 @@ namespace SimpleHRM.Controllers
     public class EmployeesController : ControllerBase
     {
         private const string employeeListCacheKey = "employeeList";
-        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _employeeRepository;
@@ -35,7 +34,7 @@ namespace SimpleHRM.Controllers
         }
 
         /// <summary>
-        /// Search employee information here
+        /// Dynamically search employee information with paging here
         /// </summary>
         /// <param name="Searchvalue"></param>
         /// <param name="paginationDto"></param>
@@ -50,7 +49,7 @@ namespace SimpleHRM.Controllers
                 var queryable = _dbContext.Employees.AsQueryable();
                 if (!string.IsNullOrEmpty(Searchvalue))
                 {                 
-                    queryable = queryable.Where(a =>  a.Id.ToString()==Searchvalue.Trim()  || a.FirstName.Trim().StartsWith(Searchvalue.Trim()) || a.MiddleName.Trim().StartsWith(Searchvalue.Trim()) || a.LastName.Trim().StartsWith(Searchvalue.Trim()) || a.Designation.Trim().StartsWith(Searchvalue.Trim()) || a.Department.Trim().StartsWith(Searchvalue.Trim()) || a.JoiningDate.Date == (check == true ? Convert.ToDateTime(Searchvalue).Date : null) || a.DateOfBirth.Date == (check == true ? Convert.ToDateTime(Searchvalue).Date : null));
+                    queryable = queryable.Where(a =>  a.Id.ToString()==Searchvalue.Trim()  || a.FirstName.Trim().StartsWith(Searchvalue.Trim()) || a.MiddleName.Trim().StartsWith(Searchvalue.Trim()) || a.LastName.Trim().StartsWith(Searchvalue.Trim()) || a.Designation.Trim()==Searchvalue.Trim() || a.Department.Trim()==Searchvalue.Trim() || a.JoiningDate.Date == (check == true ? Convert.ToDateTime(Searchvalue).Date : null) || a.DateOfBirth.Date == (check == true ? Convert.ToDateTime(Searchvalue).Date : null));
                 }
                 await HttpContext.InsertPaginationParametersInResponse(queryable, paginationDto.RecordsPerPage);
                 var objlist = await queryable.Paginate(paginationDto).AsNoTracking().OrderBy(p => p.Id).ToListAsync();            
@@ -73,15 +72,18 @@ namespace SimpleHRM.Controllers
         {
             try
             {
-                await semaphore.WaitAsync();
+              
                 if (!_cache.TryGetValue(employeeListCacheKey, out List<EmployeeDto> employeeList))
                 {
                     var objlist = await _employeeRepository.GetEmployees();
                     employeeList = _mapper.Map<List<EmployeeDto>>(objlist);
-                    var cacheExpiryOptions = new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromSeconds(60))
-                        .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
-                        .SetPriority(CacheItemPriority.Normal);
+                    var cacheExpiryOptions = new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpiration = DateTime.Now.AddMinutes(5),
+                        Priority = CacheItemPriority.High,
+                        SlidingExpiration = TimeSpan.FromMinutes(2),
+
+                    };
                     _cache.Set(employeeListCacheKey, employeeList, cacheExpiryOptions);
                 }
                 return Ok(employeeList);
@@ -91,10 +93,7 @@ namespace SimpleHRM.Controllers
 
                 return BadRequest(ex.Message);
             }
-            finally
-            {
-                semaphore.Release();
-            }
+         
         }
 
         /// <summary>
