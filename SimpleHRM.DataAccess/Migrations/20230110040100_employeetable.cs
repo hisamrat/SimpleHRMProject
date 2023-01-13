@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SimpleHRM.DataAccess.Migrations
 {
-    public partial class aa : Migration
+    public partial class employeetable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

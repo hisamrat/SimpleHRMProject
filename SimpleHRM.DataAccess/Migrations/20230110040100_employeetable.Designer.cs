@@ -10,8 +10,8 @@ using SimpleHRM.DataAccess.Data;
 namespace SimpleHRM.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230110040100_aa")]
-    partial class aa
+    [Migration("20230110040100_employeetable")]
+    partial class employeetable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

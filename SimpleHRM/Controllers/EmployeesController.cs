@@ -107,6 +107,7 @@ namespace SimpleHRM.Controllers
         {
             try
             {
+                
                 var obj = await _employeeRepository.GetEmployee(id);
                
 
@@ -175,7 +176,11 @@ namespace SimpleHRM.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+                if (!_employeeRepository.EmployeeExists(employeeDto.Id))
+                {
 
+                    return NotFound();
+                }
                 var empobj = _mapper.Map<Employee>(employeeDto);
 
                 if (!await _employeeRepository.UpdateEmployee(empobj))

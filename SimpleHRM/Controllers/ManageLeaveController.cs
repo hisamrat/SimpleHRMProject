@@ -137,7 +137,10 @@ namespace SimpleHRM.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
+                if (!_employeesLeave.LeaveExists(employeesLeaveUpdate.Id))
+                {
+                    return NotFound();
+                }
                 var empleaveobj = _mapper.Map<EmployeesLeave>(employeesLeaveUpdate);
 
                 if (!await _employeesLeave.UpdateEmployeeLeave(empleaveobj))
